@@ -4704,6 +4704,7 @@ static int panel_dsi_dt_probe(struct device *dev,
 	const struct device_node *np;
 	const char *dsi_color_format;
 	const char *dsi_mode_flags;
+	struct property *prop;
 	int ret;
 
 	np = dev->of_node;
@@ -4746,33 +4747,35 @@ static int panel_dsi_dt_probe(struct device *dev,
 		desc->bpc = 6;
 	}
 
-	of_property_read_string(np, "mode", &dsi_mode_flags);
-	if (!strcmp(dsi_mode_flags, "MODE_VIDEO"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_BURST"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_BURST;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_SYNC_PULSE"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_AUTO_VERT"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_AUTO_VERT;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_HSE"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_HSE;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HFP"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HFP;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HBP"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HBP;
-	else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HSA"))
-		desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HSA;
-	else if (!strcmp(dsi_mode_flags, "MODE_VSYNC_FLUSH"))
-		desc_dsi->flags = MIPI_DSI_MODE_VSYNC_FLUSH;
-	else if (!strcmp(dsi_mode_flags, "MODE_NO_EOT_PACKET"))
-		desc_dsi->flags = MIPI_DSI_MODE_NO_EOT_PACKET;
-	else if (!strcmp(dsi_mode_flags, "CLOCK_NON_CONTINUOUS"))
-		desc_dsi->flags = MIPI_DSI_CLOCK_NON_CONTINUOUS;
-	else if (!strcmp(dsi_mode_flags, "MODE_LPM"))
-		desc_dsi->flags = MIPI_DSI_MODE_LPM;
-	else if (!strcmp(dsi_mode_flags, "HS_PKT_END_ALIGNED"))
-		desc_dsi->flags = MIPI_DSI_HS_PKT_END_ALIGNED;
+
+	of_property_for_each_string(np, "mode", prop, dsi_mode_flags) {
+		if (!strcmp(dsi_mode_flags, "MODE_VIDEO"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_BURST"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_BURST;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_SYNC_PULSE"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_AUTO_VERT"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_AUTO_VERT;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_HSE"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_HSE;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HFP"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HFP;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HBP"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HBP;
+		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HSA"))
+			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HSA;
+		else if (!strcmp(dsi_mode_flags, "MODE_VSYNC_FLUSH"))
+			desc_dsi->flags = MIPI_DSI_MODE_VSYNC_FLUSH;
+		else if (!strcmp(dsi_mode_flags, "MODE_NO_EOT_PACKET"))
+			desc_dsi->flags = MIPI_DSI_MODE_NO_EOT_PACKET;
+		else if (!strcmp(dsi_mode_flags, "CLOCK_NON_CONTINUOUS"))
+			desc_dsi->flags = MIPI_DSI_CLOCK_NON_CONTINUOUS;
+		else if (!strcmp(dsi_mode_flags, "MODE_LPM"))
+			desc_dsi->flags = MIPI_DSI_MODE_LPM;
+		else if (!strcmp(dsi_mode_flags, "HS_PKT_END_ALIGNED"))
+			desc_dsi->flags = MIPI_DSI_HS_PKT_END_ALIGNED;
+	}
 
 
 	desc->connector_type = DRM_MODE_CONNECTOR_DSI;
@@ -4787,6 +4790,10 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	struct panel_desc_dsi *dt_desc;
 	const struct of_device_id *id;
 	int err;
+
+	dt_desc = devm_kzalloc(&dsi->dev, sizeof(*dt_desc), GFP_KERNEL);
+	if (!dt_desc)
+		return -ENOMEM;
 
 	id = of_match_node(dsi_of_match, dsi->dev.of_node);
 	if (!id)

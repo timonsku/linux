@@ -55,6 +55,7 @@ properties:
       - const: MODE_LPM
       - const: HS_PKT_END_ALIGNED
 
+  reg: true
   backlight: true
   enable-gpios: true
   width-mm: true
@@ -68,6 +69,7 @@ properties:
 
 required:
   - panel-timing
+  - reg
   - power-supply
   - dsi-color-format
   - lanes
@@ -82,6 +84,7 @@ examples:
         power-supply = <&vcc_supply>;
         backlight = <&backlight>;
         dsi-color-format = "RGB888";
+        reg = <0>;
         lanes = <1>;
         mode = "MODE_VIDEO", "MODE_VIDEO_BURST", "MODE_NO_EOT_PACKET";
 
