@@ -4750,31 +4750,31 @@ static int panel_dsi_dt_probe(struct device *dev,
 
 	of_property_for_each_string(np, "mode", prop, dsi_mode_flags) {
 		if (!strcmp(dsi_mode_flags, "MODE_VIDEO"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_BURST"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_BURST;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_BURST;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_SYNC_PULSE"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_AUTO_VERT"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_AUTO_VERT;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_AUTO_VERT;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_HSE"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_HSE;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_HSE;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HFP"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HFP;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_NO_HFP;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HBP"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HBP;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_NO_HBP;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_NO_HSA"))
-			desc_dsi->flags = MIPI_DSI_MODE_VIDEO_NO_HSA;
+			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO_NO_HSA;
 		else if (!strcmp(dsi_mode_flags, "MODE_VSYNC_FLUSH"))
-			desc_dsi->flags = MIPI_DSI_MODE_VSYNC_FLUSH;
+			desc_dsi->flags |= MIPI_DSI_MODE_VSYNC_FLUSH;
 		else if (!strcmp(dsi_mode_flags, "MODE_NO_EOT_PACKET"))
-			desc_dsi->flags = MIPI_DSI_MODE_NO_EOT_PACKET;
+			desc_dsi->flags |= MIPI_DSI_MODE_NO_EOT_PACKET;
 		else if (!strcmp(dsi_mode_flags, "CLOCK_NON_CONTINUOUS"))
-			desc_dsi->flags = MIPI_DSI_CLOCK_NON_CONTINUOUS;
+			desc_dsi->flags |= MIPI_DSI_CLOCK_NON_CONTINUOUS;
 		else if (!strcmp(dsi_mode_flags, "MODE_LPM"))
-			desc_dsi->flags = MIPI_DSI_MODE_LPM;
+			desc_dsi->flags |= MIPI_DSI_MODE_LPM;
 		else if (!strcmp(dsi_mode_flags, "HS_PKT_END_ALIGNED"))
-			desc_dsi->flags = MIPI_DSI_HS_PKT_END_ALIGNED;
+			desc_dsi->flags |= MIPI_DSI_HS_PKT_END_ALIGNED;
 	}
 
 
@@ -4791,9 +4791,7 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	const struct of_device_id *id;
 	int err;
 
-	dt_desc = devm_kzalloc(&dsi->dev, sizeof(*dt_desc), GFP_KERNEL);
-	if (!dt_desc)
-		return -ENOMEM;
+	
 
 	id = of_match_node(dsi_of_match, dsi->dev.of_node);
 	if (!id)
@@ -4801,6 +4799,9 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 
 	if (id->data == &panel_dsi) {
 		/* Handle the generic panel-dsi binding */
+		dt_desc = devm_kzalloc(&dsi->dev, sizeof(*dt_desc), GFP_KERNEL);
+		if (!dt_desc)
+			return -ENOMEM;
 		err = panel_dsi_dt_probe(&dsi->dev, dt_desc);
 		if (err < 0)
 			return err;
