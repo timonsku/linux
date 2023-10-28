@@ -4660,6 +4660,7 @@ static const struct panel_desc_dsi osd101t2045_53ts = {
 	.lanes = 4,
 };
 
+// for panels using generic panel-dsi binding
 static struct panel_desc_dsi panel_dsi;
 
 static const struct of_device_id dsi_of_match[] = {
@@ -4777,7 +4778,6 @@ static int panel_dsi_dt_probe(struct device *dev,
 			desc_dsi->flags |= MIPI_DSI_HS_PKT_END_ALIGNED;
 	}
 
-
 	desc->connector_type = DRM_MODE_CONNECTOR_DSI;
 	desc_dsi->desc = *desc;
 
@@ -4791,8 +4791,6 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	const struct of_device_id *id;
 	int err;
 
-	
-
 	id = of_match_node(dsi_of_match, dsi->dev.of_node);
 	if (!id)
 		return -ENODEV;
@@ -4805,18 +4803,25 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 		err = panel_dsi_dt_probe(&dsi->dev, dt_desc);
 		if (err < 0)
 			return err;
-		desc = dt_desc;
+		err = panel_simple_probe(&dsi->dev, &dt_desc->desc);
+
+		if (err < 0)
+			return err;
+
+		dsi->mode_flags = dt_desc->flags;
+		dsi->format = dt_desc->format;
+		dsi->lanes = dt_desc->lanes;
 	} else {
 		desc = id->data;
+		err = panel_simple_probe(&dsi->dev, &desc->desc);
+
+		if (err < 0)
+			return err;
+
+		dsi->mode_flags = desc->flags;
+		dsi->format = desc->format;
+		dsi->lanes = desc->lanes;
 	}
-
-	err = panel_simple_probe(&dsi->dev, &desc->desc);
-	if (err < 0)
-		return err;
-
-	dsi->mode_flags = desc->flags;
-	dsi->format = desc->format;
-	dsi->lanes = desc->lanes;
 
 	err = mipi_dsi_attach(dsi);
 	if (err) {
