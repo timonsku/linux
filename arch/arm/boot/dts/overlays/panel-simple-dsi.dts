@@ -1,0 +1,55 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835";
+
+    dsi_frag: fragment@0 {
+        target = <&dsi1>;
+        __overlay__{
+            status = "okay";
+            #address-cells = <1>;
+            #size-cells = <0>;
+            port {
+                    dsi_out:endpoint {
+                            remote-endpoint = <&panel_dsi_port>;
+                    };
+            };
+            panel@0 {
+                // See panel-dsi.yml binding for more information
+                compatible = "TDO,TL040WVS01CT","panel-dsi";
+                reg = <0>;
+                power-supply = <0>;
+                backlight = <0>;
+                dsi-color-format = "RGB888";
+                data-lanes = <1>;
+                mode = "MODE_VIDEO";
+                width-mm = <70>;
+                height-mm = <70>;
+
+                port {
+                    panel_dsi_port: endpoint {
+                        remote-endpoint = <&dsi_out>;
+                    };
+                };
+
+                panel-timing {
+                    clock-frequency = <30000000>;
+                    hactive = <480>;
+                    vactive = <480>;
+                    hback-porch = <44>;
+                    hfront-porch = <46>;
+                    hsync-len = <2>;
+                    vback-porch = <18>;
+                    vfront-porch = <16>;
+                    vsync-len = <2>;
+                };
+            };
+        };
+    };
+
+    __overrides__ {
+		dsi0 = <&dsi_frag>, "target:0=",<&dsi0>;
+	};
+
+};

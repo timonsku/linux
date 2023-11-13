@@ -40,6 +40,7 @@
 #include <drm/drm_edid.h>
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_panel.h>
+#include <drm/drm_of.h>
 
 /**
  * struct panel_desc - Describes a simple panel.
@@ -499,7 +500,6 @@ static int panel_dpi_probe(struct device *dev,
 
 	return 0;
 }
-
 
 #define PANEL_SIMPLE_BOUNDS_CHECK(to_check, bounds, field) \
 	(to_check->field.typ >= bounds->field.min && \
@@ -4706,7 +4706,7 @@ static int panel_dsi_dt_probe(struct device *dev,
 	const char *dsi_color_format;
 	const char *dsi_mode_flags;
 	struct property *prop;
-	int ret;
+	int dsi_lanes, ret;
 
 	np = dev->of_node;
 
@@ -4731,6 +4731,15 @@ static int panel_dsi_dt_probe(struct device *dev,
 	of_property_read_u32(np, "width-mm", &desc->size.width);
 	of_property_read_u32(np, "height-mm", &desc->size.height);
 
+	dsi_lanes = drm_of_get_data_lanes_count(np, 1, 4);
+
+	if (dsi_lanes < 0){
+		dev_err(dev, "%pOF: no or too many data-lanes defined",np);
+		return dsi_lanes;
+	}else{
+		desc_dsi->lanes = dsi_lanes;
+	}
+
 	of_property_read_u32(np, "lanes", &desc_dsi->lanes);
 
 	of_property_read_string(np, "dsi-color-format", &dsi_color_format);
@@ -4746,6 +4755,9 @@ static int panel_dsi_dt_probe(struct device *dev,
 	} else if (!strcmp(dsi_color_format, "RGB666_PACKED")) {
 		desc_dsi->format = MIPI_DSI_FMT_RGB666_PACKED;
 		desc->bpc = 6;
+	}else{
+		dev_err(dev, "%pOF: no valid dsi-color-format defined",np);
+		return -EINVAL;
 	}
 
 
@@ -4800,28 +4812,23 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 		dt_desc = devm_kzalloc(&dsi->dev, sizeof(*dt_desc), GFP_KERNEL);
 		if (!dt_desc)
 			return -ENOMEM;
+
 		err = panel_dsi_dt_probe(&dsi->dev, dt_desc);
 		if (err < 0)
 			return err;
-		err = panel_simple_probe(&dsi->dev, &dt_desc->desc);
 
-		if (err < 0)
-			return err;
-
-		dsi->mode_flags = dt_desc->flags;
-		dsi->format = dt_desc->format;
-		dsi->lanes = dt_desc->lanes;
+		desc = dt_desc;
 	} else {
 		desc = id->data;
-		err = panel_simple_probe(&dsi->dev, &desc->desc);
-
-		if (err < 0)
-			return err;
-
-		dsi->mode_flags = desc->flags;
-		dsi->format = desc->format;
-		dsi->lanes = desc->lanes;
 	}
+
+	err = panel_simple_probe(&dsi->dev, &desc->desc);
+	if (err < 0)
+		return err;
+
+	dsi->mode_flags = desc->flags;
+	dsi->format = desc->format;
+	dsi->lanes = desc->lanes;
 
 	err = mipi_dsi_attach(dsi);
 	if (err) {
