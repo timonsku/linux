@@ -94,7 +94,7 @@ examples:
                 remote-endpoint = <&dsi_out>;
             };
         };
-        
+
         panel-timing {
             clock-frequency = <9200000>;
             hactive = <800>;

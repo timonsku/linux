@@ -4733,13 +4733,12 @@ static int panel_dsi_dt_probe(struct device *dev,
 
 	dsi_lanes = drm_of_get_data_lanes_count(np, 1, 4);
 
-	if (dsi_lanes < 0){
-		dev_err(dev, "%pOF: no or too many data-lanes defined",np);
+	if (dsi_lanes < 0) {
+		dev_err(dev, "%pOF: no or too many data-lanes defined", np);
 		return dsi_lanes;
-	}else{
-		desc_dsi->lanes = dsi_lanes;
 	}
-	dev_err(dev, "dsi lanes: %d",dsi_lanes);
+
+	desc_dsi->lanes = dsi_lanes;
 
 	of_property_read_string(np, "dsi-color-format", &dsi_color_format);
 	if (!strcmp(dsi_color_format, "RGB888")) {
@@ -4754,14 +4753,13 @@ static int panel_dsi_dt_probe(struct device *dev,
 	} else if (!strcmp(dsi_color_format, "RGB666_PACKED")) {
 		desc_dsi->format = MIPI_DSI_FMT_RGB666_PACKED;
 		desc->bpc = 6;
-	}else{
-		dev_err(dev, "%pOF: no valid dsi-color-format defined",np);
+	} else {
+		dev_err(dev, "%pOF: no valid dsi-color-format defined", np);
 		return -EINVAL;
 	}
 
 
 	of_property_for_each_string(np, "mode", prop, dsi_mode_flags) {
-		dev_err(dev, "dsi mode found: %s",dsi_mode_flags);
 		if (!strcmp(dsi_mode_flags, "MODE_VIDEO"))
 			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_BURST"))

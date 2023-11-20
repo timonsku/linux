@@ -11,12 +11,12 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			port {
-					dsi_out:endpoint {
-							remote-endpoint = <&panel_dsi_port>;
-					};
+				dsi_out:endpoint {
+					remote-endpoint = <&panel_dsi_port>;
+				};
 			};
 			panel: panel-dsi-generic@0 {
-				// See panel-dsi.yml binding for more information
+				// See panel-dsi.yaml binding
 				compatible = "panel-dsi";
 				reg = <0>;
 				power-supply = <0>;
@@ -68,14 +68,14 @@
 			data-lanes = <1 2 3>;
 		};
 	};
-	
+
 	fragment@4 {
 		target = <&panel>;
 		__dormant__ {
 			data-lanes = <1 2 3 4>;
 		};
 	};
-	
+
 	fragment@5 {
 		target = <&panel>;
 		__dormant__ {
