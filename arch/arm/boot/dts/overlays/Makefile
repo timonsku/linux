@@ -177,6 +177,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
 	ov5647.dtbo \
 	ov7251.dtbo \
 	ov9281.dtbo \
+	panel-dsi-generic.dtbo \
 	papirus.dtbo \
 	pca953x.dtbo \
 	pcf857x.dtbo \
@@ -309,8 +310,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
 	waveshare-can-fd-hat-mode-a.dtbo \
 	waveshare-can-fd-hat-mode-b.dtbo \
 	wittypi.dtbo \
-	wm8960-soundcard.dtbo \
-	panel-dsi-generic.dtbo
+	wm8960-soundcard.dtbo
 
 targets += dtbs dtbs_install
 targets += $(dtbo-y)
