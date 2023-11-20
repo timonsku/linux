@@ -30,14 +30,22 @@ properties:
       - RGB666_PACKED
       - RGB565
 
-  data-lanes:
-  description: Array of DSI lane indexes. Only the count is used.
-  minItems: 1
-  items:
-    - const: 1
-    - const: 2
-    - const: 3
-    - const: 4
+  port:
+    $ref: /schemas/graph.yaml#/$defs/port-base
+    unevaluatedProperties: false
+    description:
+      Panel MIPI DSI input
+
+    properties:
+      endpoint:
+        $ref: /schemas/media/video-interfaces.yaml#
+        unevaluatedProperties: false
+
+        properties:
+          data-lanes: true
+
+        required:
+          - data-lanes
 
   mode:
     description: |
@@ -64,7 +72,6 @@ properties:
   width-mm: true
   height-mm: true
   panel-timing: true
-  port: true
   power-supply: true
   reset-gpios: true
   ddc-i2c-bus: true
@@ -74,7 +81,7 @@ required:
   - reg
   - power-supply
   - dsi-color-format
-  - lanes
+  - port
 
 additionalProperties: false
 
@@ -86,11 +93,11 @@ examples:
         backlight = <&backlight>;
         dsi-color-format = "RGB888";
         reg = <0>;
-        data-lanes = <1 2>;
         mode = "MODE_VIDEO", "MODE_VIDEO_BURST", "MODE_NO_EOT_PACKET";
 
         port {
             panel_dsi_port: endpoint {
+                data-lanes = <1 2>;
                 remote-endpoint = <&dsi_out>;
             };
         };

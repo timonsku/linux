@@ -22,13 +22,13 @@
 				power-supply = <0>;
 				backlight = <0>;
 				dsi-color-format = "RGB888";
-				data-lanes = <1>;
 				mode = "";
 				width-mm = <0>;
 				height-mm = <0>;
 
 				port {
 					panel_dsi_port: endpoint {
+						data-lanes = <1>;
 						remote-endpoint = <&dsi_out>;
 					};
 				};
@@ -49,28 +49,28 @@
 	};
 
 	fragment@1 {
-		target = <&panel>;
+		target = <&panel_dsi_port>;
 		__dormant__ {
 			data-lanes = <1>;
 		};
 	};
 
 	fragment@2 {
-		target = <&panel>;
+		target = <&panel_dsi_port>;
 		__dormant__ {
 			data-lanes = <1 2>;
 		};
 	};
 
 	fragment@3 {
-		target = <&panel>;
+		target = <&panel_dsi_port>;
 		__dormant__ {
 			data-lanes = <1 2 3>;
 		};
 	};
 
 	fragment@4 {
-		target = <&panel>;
+		target = <&panel_dsi_port>;
 		__dormant__ {
 			data-lanes = <1 2 3 4>;
 		};
@@ -83,33 +83,8 @@
 		};
 	};
 
-	i2c_frag: fragment@6 {
-		target = <&i2c_csi_dsi>;
-		__overlay__ {
-			#address-cells = <1>;
-			#size-cells = <0>;
-			status = "okay";
-
-		};
-	};
-
-	fragment@7 {
-		target = <&i2c0if>;
-		__overlay__ {
-			status = "okay";
-		};
-	};
-
-	fragment@8 {
-		target = <&i2c0mux>;
-		__overlay__ {
-			status = "okay";
-		};
-	};
-
 	__overrides__ {
-		dsi0 = <&dsi_frag>, "target:0=",<&dsi0>,
-			<&i2c_frag>, "target:0=",<&i2c_csi_dsi0>;
+		dsi0 = <&dsi_frag>, "target:0=",<&dsi0>;
 
 		clock-frequency = <&timing>, "clock-frequency:0";
 		hactive = <&timing>, "hactive:0";

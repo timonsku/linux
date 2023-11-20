@@ -4731,7 +4731,7 @@ static int panel_dsi_dt_probe(struct device *dev,
 	of_property_read_u32(np, "width-mm", &desc->size.width);
 	of_property_read_u32(np, "height-mm", &desc->size.height);
 
-	dsi_lanes = drm_of_get_data_lanes_count(np, 1, 4);
+	dsi_lanes = drm_of_get_data_lanes_count_ep(np, 0, 0, 1, 4);
 
 	if (dsi_lanes < 0) {
 		dev_err(dev, "%pOF: no or too many data-lanes defined", np);
