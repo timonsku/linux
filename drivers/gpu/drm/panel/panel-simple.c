@@ -4739,8 +4739,7 @@ static int panel_dsi_dt_probe(struct device *dev,
 	}else{
 		desc_dsi->lanes = dsi_lanes;
 	}
-
-	of_property_read_u32(np, "lanes", &desc_dsi->lanes);
+	dev_err(dev, "dsi lanes: %d",dsi_lanes);
 
 	of_property_read_string(np, "dsi-color-format", &dsi_color_format);
 	if (!strcmp(dsi_color_format, "RGB888")) {
@@ -4762,6 +4761,7 @@ static int panel_dsi_dt_probe(struct device *dev,
 
 
 	of_property_for_each_string(np, "mode", prop, dsi_mode_flags) {
+		dev_err(dev, "dsi mode found: %s",dsi_mode_flags);
 		if (!strcmp(dsi_mode_flags, "MODE_VIDEO"))
 			desc_dsi->flags |= MIPI_DSI_MODE_VIDEO;
 		else if (!strcmp(dsi_mode_flags, "MODE_VIDEO_BURST"))
