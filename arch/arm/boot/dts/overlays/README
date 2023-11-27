@@ -4686,6 +4686,35 @@ Params: clock-frequency         Display clock frequency (Hz)
         rotate                  Display rotation {0,90,180,270} (default 0)
 
 
+Name:   vc4-kms-dsi-generic
+Info:   Enable a generic DSI display under KMS.
+        Default timings are for a 840x480 RGB888 panel.
+        Requires vc4-kms-v3d to be loaded.
+Load:   dtoverlay=vc4-kms-dsi-generic,<param>=<val>
+Params: clock-frequency         Display clock frequency (Hz)
+        hactive                 Horizontal active pixels
+        hfp                     Horizontal front porch
+        hsync                   Horizontal sync pulse width
+        hbp                     Horizontal back porch
+        vactive                 Vertical active lines
+        vfp                     Vertical front porch
+        vsync                   Vertical sync pulse width
+        vbp                     Vertical back porch
+        width-mm                Define the screen width in mm
+        height-mm               Define the screen height in mm
+        rgb565                  Change to RGB565 output
+        rgb666                  Change to RGB666 output
+        rgb666p                 Change to RGB666 output with pixel packing
+        rgb888                  Change to RGB888 output, this is the default
+        one-lane                Use one DSI lane for data transmission
+                                This is the default
+        two-lane                Use two DSI lanes for data transmission
+        three-lane              Use three DSI lanes for data transmission
+                                Only supported on Pi5+ and CM
+        four-lane               Use four DSI lanes for data transmission
+                                Only supported on Pi5+ and CM
+
+
 Name:   vc4-kms-dpi-hyperpixel2r
 Info:   Enable the KMS drivers for the Pimoroni HyperPixel2 Round DPI display.
         Requires vc4-kms-v3d to be loaded.
