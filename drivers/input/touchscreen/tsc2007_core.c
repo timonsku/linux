@@ -252,11 +252,8 @@ static int tsc2007_probe_properties(struct device *dev, struct tsc2007 *ts)
 	else
 		ts->poll_period = msecs_to_jiffies(1);
 
-	if (!device_property_read_u32(dev, "touchscreen-x-plate-ohms", &val32)) {
+	if (!device_property_read_u32(dev, "ti,x-plate-ohms", &val32)) {
 		ts->x_plate_ohms = val32;
-	} else {
-		dev_err(dev, "Missing touchscreen-x-plate-ohms device property\n");
-		return -EINVAL;
 	}
 
 	ts->gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
