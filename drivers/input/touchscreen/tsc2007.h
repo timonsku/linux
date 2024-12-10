@@ -18,6 +18,7 @@
 
 #ifndef _TSC2007_H
 #define _TSC2007_H
+#include <linux/input/touchscreen.h>
 
 struct gpio_desc;
 

@@ -21,7 +21,6 @@
 #include <linux/slab.h>
 #include <linux/gpio/consumer.h>
 #include <linux/input.h>
-#include <linux/input/touchscreen.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>
@@ -233,11 +232,20 @@ static int tsc2007_probe_properties(struct device *dev, struct tsc2007 *ts)
 {
 	u32 val32;
 	u64 val64;
-
-	if (!device_property_read_u32(dev, "touchscreen-max-pressure", &val32))
+	
+	if (!device_property_read_u32(dev, "ti,max-rt", &val32))
 		ts->max_rt = val32;
 	else
 		ts->max_rt = MAX_12BIT;
+
+	if (!device_property_read_u32(dev, "ti,fuzzx", &val32))
+		ts->fuzzx = val32;
+
+	if (!device_property_read_u32(dev, "ti,fuzzy", &val32))
+		ts->fuzzy = val32;
+
+	if (!device_property_read_u32(dev, "ti,fuzzz", &val32))
+		ts->fuzzz = val32;
 
 	if (!device_property_read_u64(dev, "ti,poll-period", &val64))
 		ts->poll_period = msecs_to_jiffies(val64);
@@ -277,8 +285,11 @@ static int tsc2007_probe_pdev(struct device *dev, struct tsc2007 *ts,
 	ts->fuzzy             = pdata->fuzzy;
 	ts->fuzzz             = pdata->fuzzz;
 
-	if (pdata->x_plate_ohms == 0) {
-		dev_err(dev, "x_plate_ohms is not set up in platform data\n");
+	u32 val32;
+	int ret = device_property_read_u32(dev, "ti,max-rt", &val32);
+	
+	if (pdata->x_plate_ohms == 0 && !ret) {
+		dev_warn(dev, "x_plate_ohms/ti,max-rt is not set up in platform data\n");
 		return -EINVAL;
 	}
 
@@ -344,10 +355,10 @@ static int tsc2007_probe(struct i2c_client *client,
 
 	input_set_capability(input_dev, EV_KEY, BTN_TOUCH);
 
-	/* Apply */
 	input_set_abs_params(input_dev, ABS_X, 0, MAX_12BIT, ts->fuzzx, 0);
 	input_set_abs_params(input_dev, ABS_Y, 0, MAX_12BIT, ts->fuzzy, 0);
-	input_set_abs_params(input_dev, ABS_PRESSURE, 0, MAX_12BIT, ts->fuzzz, 0);
+	input_set_abs_params(input_dev, ABS_PRESSURE, 0, MAX_12BIT,
+						 ts->fuzzz, 0);
 
 	/*Get all properties from devicetree and override defaults if present*/
 	touchscreen_parse_properties(input_dev, false, &ts->prop);
